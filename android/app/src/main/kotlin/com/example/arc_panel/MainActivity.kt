@@ -1,4 +1,4 @@
-RRCY608HEQXpackage com.example.arc_panel
+package com.example.arc_panel
 
 import io.flutter.embedding.android.FlutterActivity
 
