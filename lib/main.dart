@@ -1,10 +1,11 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:toastification/toastification.dart'; // <-- 1. Import ini boss
 
 import 'core/theme/app_theme.dart';
 import 'features/activity/repositories/activity_repository.dart';
-import 'features/home/views/main_layout.dart'; // <-- Import Layout-nya boss
+import 'features/home/views/main_layout.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,11 +24,14 @@ class ArcPanelApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Arc Panel',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light(),
-      home: const MainLayout(), // <-- Tembak langsung ke MainLayout
+    // 2. Bungkus MaterialApp dengan ToastificationWrapper
+    return ToastificationWrapper(
+      child: MaterialApp(
+        title: 'Arc Panel',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light(),
+        home: const MainLayout(),
+      ),
     );
   }
 }
