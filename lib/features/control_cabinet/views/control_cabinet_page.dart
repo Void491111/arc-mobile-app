@@ -54,69 +54,74 @@ class _ControlCabinetPageState extends State<ControlCabinetPage> {
       body: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
-          return SingleChildScrollView(
+          // 1. Ganti SingleChildScrollView jadi Padding biasa
+          return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Column(
               children: [
-                // SECTION: DIGITAL INPUT
-                IOCardWrapper(
-                  title: 'Digital Input',
-                  trailing: Row(
-                    children: [
-                      Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFFD32F2F), shape: BoxShape.circle)),
-                      const SizedBox(width: 4),
-                      Text('Off', style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[700])),
-                    ],
-                  ),
-                  child: GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 8,
-                      childAspectRatio: 0.8,
+                // 2. Bungkus IOCardWrapper Pertama dengan Expanded
+                Expanded(
+                  child: IOCardWrapper(
+                    title: 'Digital Input',
+                    trailing: Row(
+                      children: [
+                        Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFFD32F2F), shape: BoxShape.circle)),
+                        const SizedBox(width: 4),
+                        Text('Off', style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[700])),
+                      ],
                     ),
-                    itemCount: _controller.digitalInputs.length,
-                    itemBuilder: (context, index) {
-                      final item = _controller.digitalInputs[index];
-                      return InputIndicator(
-                        label: item.label,
-                        isOn: item.isOn,
-                        onEdit: () => _showEditLabelDialog(context, true, index, item.label)
-                      );
-                    },
+                    child: GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(), // Matikan fungsi scroll grid
+                      // shrinkWrap: true, <-- HAPUS BARIS INI
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 5,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 8,
+                        childAspectRatio: 0.8, // TIPS: Mainkan angka ini kalau buletannya agak kepotong
+                      ),
+                      itemCount: _controller.digitalInputs.length,
+                      itemBuilder: (context, index) {
+                        final item = _controller.digitalInputs[index];
+                        return InputIndicator(
+                          label: item.label,
+                          isOn: item.isOn,
+                          onEdit: () => _showEditLabelDialog(context, true, index, item.label)
+                        );
+                      },
+                    ),
                   ),
                 ),
                 
                 const SizedBox(height: 16),
 
-                // SECTION: DIGITAL OUTPUT
-                IOCardWrapper(
-                  title: 'Digital Output',
-                  child: GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 0,
-                      childAspectRatio: 0.65,
+                // 3. Bungkus IOCardWrapper Kedua dengan Expanded
+                Expanded(
+                  child: IOCardWrapper(
+                    title: 'Digital Output',
+                    child: GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(), // Matikan fungsi scroll grid
+                      // shrinkWrap: true, <-- HAPUS BARIS INI JUGA
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 5,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 0,
+                        childAspectRatio: 0.65, // TIPS: Mainkan angka ini kalau switch-nya agak kepotong
+                      ),
+                      itemCount: _controller.digitalOutputs.length,
+                      itemBuilder: (context, index) {
+                        final item = _controller.digitalOutputs[index];
+                        return OutputSwitch(
+                          label: item.label,
+                          isOn: item.isOn,
+                          onChanged: (val) => _controller.toggleOutput(index, val),
+                          onEdit: () => _showEditLabelDialog(context, false, index, item.label)
+                        );
+                      },
                     ),
-                    itemCount: _controller.digitalOutputs.length,
-                    itemBuilder: (context, index) {
-                      final item = _controller.digitalOutputs[index];
-                      return OutputSwitch(
-                        label: item.label,
-                        isOn: item.isOn,
-                        onChanged: (val) => _controller.toggleOutput(index, val),
-                        onEdit: () => _showEditLabelDialog(context, false, index, item.label)
-                      );
-                    },
                   ),
                 ),
                 
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
               ],
             ),
           );

@@ -47,7 +47,7 @@ class IOCardWrapper extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-          child, // Ini tempat Grid-nya nanti dimasukin
+          Expanded(child: child), // Ini tempat Grid-nya nanti dimasukin
         ],
       ),
     );
