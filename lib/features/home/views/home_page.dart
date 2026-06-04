@@ -113,6 +113,7 @@ class _HomePageState extends State<HomePage> {
                     flex: 2, 
                     child: ActivitySection(
                       onViewAll: _openActivityPage,
+                      scrollController: _activityScrollController,
                     ),
                   ),
                 ],
