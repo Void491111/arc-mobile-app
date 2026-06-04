@@ -18,9 +18,9 @@ class _MainLayoutState extends State<MainLayout> {
 
   // Tumpukan kartu halamannya boss
   final List<Widget> _pages = [
-    const ControlCabinetPage(), // Index 0
+    const Scaffold(body: Center(child: Text('Halaman Machine Control'))), // Index 0
     const HomePage(),           // Index 1
-    const ActivityPage(),       // Index 2
+    const ControlCabinetPage(),       // Index 2
   ];
 
   @override
