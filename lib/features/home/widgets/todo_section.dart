@@ -10,6 +10,9 @@ class TodoSection extends StatelessWidget {
   final VoidCallback onAdd;
   final Future<void> Function(String id) onToggle;
   final Future<void> Function(String id) onRemove;
+  
+  // 1. Tambahkan parameter scrollController boss!
+  final ScrollController scrollController; 
 
   const TodoSection({
     super.key,
@@ -17,6 +20,7 @@ class TodoSection extends StatelessWidget {
     required this.onAdd,
     required this.onToggle,
     required this.onRemove,
+    required this.scrollController, // Wajib diisi saat dipanggil di HomePage
   });
 
   @override
@@ -29,17 +33,33 @@ class TodoSection extends StatelessWidget {
           trailing: _AddButton(onTap: onAdd),
         ),
         const SizedBox(height: 14),
-        if (todos.isEmpty)
-          const _EmptyTodos()
-        else
-          ...todos.map(
-            (t) => _TodoTile(
-              key: ValueKey(t.id),
-              todo: t,
-              onToggle: () => onToggle(t.id),
-              onRemove: () => onRemove(t.id),
-            ),
-          ),
+        
+        // 2. Gunakan Expanded & ListView biar nggak overflow
+        Expanded(
+          child: todos.isEmpty
+              ? const _EmptyTodos()
+              : Scrollbar(
+                  controller: scrollController,
+                  thumbVisibility: true, // Biar bar scroll-nya kelihatan
+                  thickness: 4.0,
+                  radius: const Radius.circular(8),
+                  child: ListView.builder(
+                    controller: scrollController,
+                    physics: const BouncingScrollPhysics(),
+                    padding: EdgeInsets.zero, // Hilangkan padding bawaan biar rapi
+                    itemCount: todos.length,
+                    itemBuilder: (context, index) {
+                      final t = todos[index];
+                      return _TodoTile(
+                        key: ValueKey(t.id),
+                        todo: t,
+                        onToggle: () => onToggle(t.id),
+                        onRemove: () => onRemove(t.id),
+                      );
+                    },
+                  ),
+                ),
+        ),
       ],
     );
   }

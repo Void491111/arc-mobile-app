@@ -1,16 +1,13 @@
+// lib/features/home/views/home_page.dart
 import 'package:flutter/material.dart';
 
 import '../../activity/views/activity_page.dart';
 import '../controllers/home_controller.dart';
 import '../widgets/activity_section.dart';
-import '../widgets/app_bottom_nav.dart';
 import '../widgets/home_header.dart';
 import '../widgets/status_card.dart';
 import '../widgets/todo_dialog.dart';
 import '../widgets/todo_section.dart';
-import '../../control_cabinet/views/control_cabinet_page.dart';
-
-
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,8 +17,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final ScrollController _todoScrollController = ScrollController();
+  final ScrollController _activityScrollController = ScrollController();
+
   late final HomeController _controller;
-  int _activeNavIndex = 1;
 
   @override
   void initState() {
@@ -32,6 +31,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    _todoScrollController.dispose();
+    _activityScrollController.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -57,55 +58,67 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Di dalam file home_page.dart boss, bagian build-nya jadi begini:
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      backgroundColor: const Color(0xFFF8F9FA),
       body: SafeArea(
-        bottom: false,
-        child: ListenableBuilder(
-          listenable: _controller,
-          builder: (context, _) {
-            // Langsung pakai Column aja, gak usah digabung sama BottomNav lagi
-            return Column(
-              children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
-                    physics: const BouncingScrollPhysics(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        HomeHeader(
-                          greeting: _greetingFor(_controller.now.hour),
-                          operatorName: _controller.operatorName,
-                          onSettingsTap: () {},
-                        ),
-                        const SizedBox(height: 18),
-                        StatusCard(
-                          systemStatus: _controller.systemStatus,
-                          machineLabel: _controller.machineStateLabel(),
-                          now: _controller.now,
-                          uptime: _controller.sessionUptime,
-                        ),
-                        const SizedBox(height: 28),
-                        TodoSection(
-                          todos: _controller.todos,
-                          onAdd: _showAddTodoDialog,
-                          onToggle: _controller.toggleTodo,
-                          onRemove: _controller.removeTodo,
-                        ),
-                        const SizedBox(height: 28),
-                        ActivitySection(onViewAll: _openActivityPage),
-                      ],
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // --- 1. HEADER ---
+                  HomeHeader(
+                    greeting: _greetingFor(DateTime.now().hour),
+                    operatorName: 'Alif Hidayat', // Nama operator dipasang di sini
+                    onSettingsTap: () {
+                      // Kosongin dulu boss buat nanti
+                    },
+                  ), 
+
+                  const SizedBox(height: 16),
+
+                  // --- 2. STATUS CARD ---
+                  StatusCard(
+                    systemStatus: SystemStatus.offline, 
+                    machineLabel: 'Arc Machine',
+                    now: DateTime.now(),
+                    uptime: const Duration(hours: 0, minutes: 0, seconds: 0),
+                  ), 
+
+                  const SizedBox(height: 16),
+
+                  // --- 3. SECTION: MY TODO LIST ---
+                  Expanded(
+                    flex: 3, 
+                    child: TodoSection(
+                      todos: _controller.todos, // Mengambil list dari controller
+                      onAdd: _showAddTodoDialog,
+                      onToggle: _controller.toggleTodo, 
+                      onRemove: _controller.removeTodo,
+                      scrollController: _todoScrollController,
+                      // TODO: Hapus komen di bawah ini KALAU file todo_section.dart udah boss update!
+                      // scrollController: _todoScrollController, 
                     ),
                   ),
-                ),
-                // AppBottomNav DIHAPUS DARI SINI
-              ],
-            );
-          },
+
+                  const SizedBox(height: 16),
+
+                  // --- 4. SECTION: RECENT ACTIVITY ---
+                  Expanded(
+                    flex: 2, 
+                    child: ActivitySection(
+                      onViewAll: _openActivityPage,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
