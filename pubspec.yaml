@@ -15,7 +15,7 @@ dependencies:
   intl: ^0.19.0
   shared_preferences: ^2.2.3
   toastification: ^3.2.0
-  flutter_joystick: ^0.1.1
+  flutter_joystick: ^0.2.2
   slide_to_act: ^2.0.2
 
 dev_dependencies:
