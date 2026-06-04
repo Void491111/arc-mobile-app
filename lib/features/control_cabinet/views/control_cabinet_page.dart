@@ -64,6 +64,56 @@ class _ControlCabinetPageState extends State<ControlCabinetPage> {
     }
   }
 
+  Future<void> _showResetConfirmation(BuildContext context) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Reset Pengaturan?', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 18)),
+        content: Text(
+          'Semua nama label Input dan Output akan dikembalikan ke pengaturan pabrik (X1, Y1, dst). Lanjutkan?', 
+          style: GoogleFonts.poppins(fontSize: 14)
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Batal', style: GoogleFonts.poppins(color: Colors.grey[600], fontWeight: FontWeight.w600)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFD32F2F),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Reset', style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
+
+    // Kalau user pilih 'Reset'
+    if (confirm == true) {
+      await _controller.resetToDefault();
+      
+      // Kasih toastification biar tau kalau udah sukses
+      if (context.mounted) {
+        toastification.show(
+          context: context,
+          type: ToastificationType.info,
+          style: ToastificationStyle.flat,
+          title: Text('Sistem Di-reset', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+          description: Text('Semua label kembali ke pengaturan pabrik.', style: GoogleFonts.poppins(fontSize: 12)),
+          autoCloseDuration: const Duration(seconds: 3),
+          icon: const Icon(Icons.restore),
+          primaryColor: const Color(0xFFD32F2F),
+          backgroundColor: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,6 +130,14 @@ class _ControlCabinetPageState extends State<ControlCabinetPage> {
           ),
         ),
         centerTitle: false,
+        actions: [
+          IconButton(
+            icons: const Icon(Icons.refresh_rounded, color: Color(0xFFD32F2F)),
+            tooltip: 'Reset ke pengaturan semula',
+            onPressed: () => _showResetConfirmation(context),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: AnimatedBuilder(
         animation: _controller,
