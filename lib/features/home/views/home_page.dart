@@ -8,6 +8,9 @@ import '../widgets/home_header.dart';
 import '../widgets/status_card.dart';
 import '../widgets/todo_dialog.dart';
 import '../widgets/todo_section.dart';
+import '../../control_cabinet/views/control_cabinet_page.dart';
+
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -54,6 +57,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Di dalam file home_page.dart boss, bagian build-nya jadi begini:
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,6 +67,7 @@ class _HomePageState extends State<HomePage> {
         child: ListenableBuilder(
           listenable: _controller,
           builder: (context, _) {
+            // Langsung pakai Column aja, gak usah digabung sama BottomNav lagi
             return Column(
               children: [
                 Expanded(
@@ -97,10 +102,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                AppBottomNav(
-                  activeIndex: _activeNavIndex,
-                  onTap: (i) => setState(() => _activeNavIndex = i),
-                ),
+                // AppBottomNav DIHAPUS DARI SINI
               ],
             );
           },

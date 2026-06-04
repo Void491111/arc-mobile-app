@@ -1,9 +1,10 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'core/theme/app_theme.dart';
 import 'features/activity/repositories/activity_repository.dart';
-import 'features/home/views/home_page.dart';
+import 'features/home/views/main_layout.dart'; // <-- Import Layout-nya boss
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +27,7 @@ class ArcPanelApp extends StatelessWidget {
       title: 'Arc Panel',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
-      home: const HomePage(),
+      home: const MainLayout(), // <-- Tembak langsung ke MainLayout
     );
   }
 }
