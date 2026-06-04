@@ -6,12 +6,14 @@ class OutputSwitch extends StatelessWidget {
   final String label;
   final bool isOn;
   final ValueChanged<bool> onChanged;
+  final VoidCallback onEdit; // <-- INI TAMBAHANNYA BOSS
 
   const OutputSwitch({
     super.key,
     required this.label,
     required this.isOn,
     required this.onChanged,
+    required this.onEdit, // <-- JANGAN LUPA DI SINI JUGA
   });
 
   @override
@@ -20,7 +22,7 @@ class OutputSwitch extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Transform.scale(
-          scale: 0.8, // Dikecilin dikit biar muat 5 kolom dengan rapi
+          scale: 0.8,
           child: Switch(
             value: isOn,
             onChanged: onChanged,
@@ -31,9 +33,19 @@ class OutputSwitch extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: GoogleFonts.poppins(fontSize: 10, color: Colors.grey[700]),
+        GestureDetector(
+          onTap: onEdit, // <-- DAN DI SINI BUAT KLIKNYA
+          child: Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 10,
+              color: const Color(0xFFD32F2F),
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ],
     );
