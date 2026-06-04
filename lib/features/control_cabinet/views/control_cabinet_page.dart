@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controllers/cabinet_controller.dart';
-import '../widgets/io_card_wrapper.dart'; // <-- PERHATIKAN HURUF 'S' DI WIDGETS
+import '../widgets/io_card_wrapper.dart';
 import '../widgets/edit_label_dialog.dart';
 import '../widgets/input_indicator.dart';
 import '../widgets/output_switch.dart';
@@ -16,8 +16,18 @@ class ControlCabinetPage extends StatefulWidget {
 
 class _ControlCabinetPageState extends State<ControlCabinetPage> {
   final CabinetController _controller = CabinetController();
+  
+  // 1. Inisialisasi ScrollController yang benar boss
+  final ScrollController _outputScrollController = ScrollController();
 
-  // FUNGSI INI HARUS ADA DI DALAM SINI BOSS, BUKAN DI ATAS
+  @override
+  void dispose() {
+    // 2. Wajib dispose biar memori aman
+    _outputScrollController.dispose();
+    super.dispose();
+  }
+
+  // 3. Fungsi dialog ditaruh di dalam state yang sama dengan rapi
   Future<void> _showEditLabelDialog(
       BuildContext context, bool isInput, int index, String currentLabel) async {
     final newLabel = await showDialog<String>(
@@ -54,30 +64,32 @@ class _ControlCabinetPageState extends State<ControlCabinetPage> {
       body: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
-          // 1. Ganti SingleChildScrollView jadi Padding biasa
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Column(
               children: [
-                // 2. Bungkus IOCardWrapper Pertama dengan Expanded
+                // SECTION: DIGITAL INPUT (Pas & Non-scroll)
                 Expanded(
                   child: IOCardWrapper(
                     title: 'Digital Input',
                     trailing: Row(
                       children: [
-                        Container(width: 8, height: 8, decoration: const BoxDecoration(color: Color(0xFFD32F2F), shape: BoxShape.circle)),
+                        Container(
+                          width: 8, 
+                          height: 8, 
+                          decoration: const BoxDecoration(color: Color(0xFFD32F2F), shape: BoxShape.circle),
+                        ),
                         const SizedBox(width: 4),
                         Text('Off', style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[700])),
                       ],
                     ),
                     child: GridView.builder(
-                      physics: const NeverScrollableScrollPhysics(), // Matikan fungsi scroll grid
-                      // shrinkWrap: true, <-- HAPUS BARIS INI
+                      physics: const NeverScrollableScrollPhysics(),
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 5,
-                        mainAxisSpacing: 16,
+                        mainAxisSpacing: 8,
                         crossAxisSpacing: 8,
-                        childAspectRatio: 0.8, // TIPS: Mainkan angka ini kalau buletannya agak kepotong
+                        childAspectRatio: 1.3,
                       ),
                       itemCount: _controller.digitalInputs.length,
                       itemBuilder: (context, index) {
@@ -85,7 +97,7 @@ class _ControlCabinetPageState extends State<ControlCabinetPage> {
                         return InputIndicator(
                           label: item.label,
                           isOn: item.isOn,
-                          onEdit: () => _showEditLabelDialog(context, true, index, item.label)
+                          onEdit: () => _showEditLabelDialog(context, true, index, item.label),
                         );
                       },
                     ),
@@ -94,29 +106,39 @@ class _ControlCabinetPageState extends State<ControlCabinetPage> {
                 
                 const SizedBox(height: 16),
 
-                // 3. Bungkus IOCardWrapper Kedua dengan Expanded
+                // SECTION: DIGITAL OUTPUT (Scrollable dengan Scrollbar internal)
                 Expanded(
                   child: IOCardWrapper(
                     title: 'Digital Output',
-                    child: GridView.builder(
-                      physics: const NeverScrollableScrollPhysics(), // Matikan fungsi scroll grid
-                      // shrinkWrap: true, <-- HAPUS BARIS INI JUGA
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 5,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 0,
-                        childAspectRatio: 0.65, // TIPS: Mainkan angka ini kalau switch-nya agak kepotong
+                    child: Scrollbar(
+                      controller: _outputScrollController,
+                      thumbVisibility: true,
+                      trackVisibility: true,
+                      thickness: 4.0,
+                      radius: const Radius.circular(8),
+                      child: GridView.builder(
+                        controller: _outputScrollController,
+                        physics: const BouncingScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 5,
+                          mainAxisSpacing: 16,
+                          crossAxisSpacing: 8,
+                          childAspectRatio: 0.65,
+                        ),
+                        itemCount: _controller.digitalOutputs.length,
+                        itemBuilder: (context, index) {
+                          final item = _controller.digitalOutputs[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: OutputSwitch(
+                              label: item.label,
+                              isOn: item.isOn,
+                              onChanged: (val) => _controller.toggleOutput(index, val),
+                              onEdit: () => _showEditLabelDialog(context, false, index, item.label),
+                            ),
+                          );
+                        },
                       ),
-                      itemCount: _controller.digitalOutputs.length,
-                      itemBuilder: (context, index) {
-                        final item = _controller.digitalOutputs[index];
-                        return OutputSwitch(
-                          label: item.label,
-                          isOn: item.isOn,
-                          onChanged: (val) => _controller.toggleOutput(index, val),
-                          onEdit: () => _showEditLabelDialog(context, false, index, item.label)
-                        );
-                      },
                     ),
                   ),
                 ),
