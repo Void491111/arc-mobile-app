@@ -132,7 +132,7 @@ class _ControlCabinetPageState extends State<ControlCabinetPage> {
         centerTitle: false,
         actions: [
           IconButton(
-            icons: const Icon(Icons.refresh_rounded, color: Color(0xFFD32F2F)),
+            icon: const Icon(Icons.refresh_rounded, color: Color(0xFFD32F2F)),
             tooltip: 'Reset ke pengaturan semula',
             onPressed: () => _showResetConfirmation(context),
           ),
