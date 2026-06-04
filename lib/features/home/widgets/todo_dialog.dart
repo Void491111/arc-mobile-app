@@ -37,9 +37,10 @@ class _AddTodoDialogState extends State<AddTodoDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      alignment: Alignment.topCenter,
       backgroundColor: AppColors.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      insetPadding: const EdgeInsets.symmetric(horizontal: 32),
+      insetPadding: const EdgeInsets.fromLTRB(32, 80, 32, 0),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(24, 28, 24, 14),
         child: Column(
