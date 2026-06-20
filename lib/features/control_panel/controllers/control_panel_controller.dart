@@ -6,7 +6,7 @@ class ControlPanelController extends ChangeNotifier {
   bool isPowerOn = false;
   double speedValue = 25.0;
   
-  // Tampungan nilai posisi koordinat mesin arc
+  // storage untuk nilai
   double j1Pos = 0.0;
   double j2Pos = 0.0;
 
@@ -18,7 +18,7 @@ class ControlPanelController extends ChangeNotifier {
   void togglePower(bool value) {
     isPowerOn = value;
     if (!isPowerOn) {
-      // Kalau power off, otomatis speed drop ke nol
+      // balek kan nilai ke 0 kalau status nya mati
       speedValue = 0.0;
     }
     notifyListeners();
