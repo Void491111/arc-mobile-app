@@ -15,7 +15,6 @@ class StatusCard extends StatelessWidget {
     required this.uptime,
   });
 
-  // Helper untuk format tanggal ala "Thursday, 4 Jun 2026" tanpa package tambahan
   String _formatDate(DateTime date) {
     const days = [
       'Monday',
